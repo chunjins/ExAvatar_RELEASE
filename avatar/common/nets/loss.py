@@ -6,6 +6,7 @@ import math
 import lpips
 from utils.smpl_x import smpl_x
 from pytorch3d.structures import Meshes
+from config import cfg
 
 class RGBLoss(nn.Module):
     def __init__(self):
@@ -41,10 +42,11 @@ class SSIM(nn.Module):
         window_2d = window_2d.repeat(feat_dim,1,1,1)
         return window_2d
 
-    def forward(self, img_out, img_target, bbox=None, mask=None, bg=None, window_size=11):
+    def forward(self, img_out, img_target, bbox=None, mask=None, window_size=11):
         batch_size, feat_dim, img_height, img_width = img_out.shape
-        if (mask is not None) and (bg is not None):
-            img_target = img_target * mask + (1 - mask) * bg[:, :, None, None]
+        if mask is not None:
+            img_out = img_out * mask
+            img_target = img_target * mask
         if bbox is not None:
             xmin, ymin, width, height = [int(x) for x in bbox[0]]
             xmin = max(xmin, 0)
@@ -77,10 +79,8 @@ class LPIPS(nn.Module):
         super(LPIPS, self).__init__()
         self.lpips = lpips.LPIPS(net='vgg').cuda()
 
-    def forward(self, img_out, img_target, bbox=None, mask=None, bg=None):
+    def forward(self, img_out, img_target, bbox=None):
         batch_size, feat_dim, img_height, img_width = img_out.shape
-        if (mask is not None) and (bg is not None):
-            img_target = img_target * mask + (1 - mask) * bg[:, :, None, None]
         if bbox is not None:
             xmin, ymin, width, height = [int(x) for x in bbox[0]]
             xmin = max(xmin, 0)
