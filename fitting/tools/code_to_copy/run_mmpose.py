@@ -60,3 +60,12 @@ for frame_idx in frame_idx_list:
     vis = cv2.putText(vis, str(frame_idx), (int(img_width*0.1), int(img_height*0.1)), cv2.FONT_HERSHEY_PLAIN, 2.0, (0,0,255), 3)
     video_save.write(vis)
 video_save.release()
+
+#demo first: cd mmpose
+# python demo/topdown_demo_with_mmdet.py \
+#     demo/mmdetection_cfg/rtmdet_m_640-8xb32_coco-person.py \
+#     https://download.openmmlab.com/mmpose/v1/projects/rtmpose/rtmdet_m_8xb32-100e_coco-obj365-person-235e8209.pth \
+#     configs/wholebody_2d_keypoint/rtmpose/ubody/rtmpose-l_8xb32-270e_coco-ubody-wholebody-384x288.py \
+#     https://huggingface.co/yzd-v/DWPose/resolve/main/dw-ll_ucoco_384.pth \
+#     --input tests/data/coco/000000197388.jpg \
+#     --output-root vis_results

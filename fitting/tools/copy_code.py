@@ -24,14 +24,14 @@ cmd = 'cp ' + osp.join(src_path, 'run_mmpose.py') + ' ./mmpose/.'
 os.system(cmd)
 
 # segment-anything
-cmd = 'cp ' + osp.join(src_path, 'run_sam.py') + ' ./segment-anything/.'
-os.system(cmd)
+# cmd = 'cp ' + osp.join(src_path, 'run_sam.py') + ' ./segment-anything/.'
+# os.system(cmd)
 
 # Depth-Anything-V2
-cmd = 'cp ' + osp.join(src_path, 'run_depth_anything.py') + ' ./Depth-Anything-V2/.'
-os.system(cmd)
+# cmd = 'cp ' + osp.join(src_path, 'run_depth_anything.py') + ' ./Depth-Anything-V2/.'
+# os.system(cmd)
 
 # COLMAP
-os.makedirs('./COLMAP', exist_ok=True)
-cmd = 'cp ' + osp.join(src_path, 'run_colmap.py') + ' ./COLMAP/.'
-os.system(cmd)
+# os.makedirs('./COLMAP', exist_ok=True)
+# cmd = 'cp ' + osp.join(src_path, 'run_colmap.py') + ' ./COLMAP/.'
+# os.system(cmd)

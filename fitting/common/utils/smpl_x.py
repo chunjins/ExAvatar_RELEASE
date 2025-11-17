@@ -16,7 +16,7 @@ class SMPLX(object):
         self.vertex_num = 10475
         self.face = self.layer.faces.astype(np.int64)
         self.flip_corr = np.load(osp.join(cfg.human_model_path, 'smplx', 'smplx_flip_correspondences.npz'))
-        self.vertex_uv, self.face_uv = self.load_uv_info()
+        # self.vertex_uv, self.face_uv = self.load_uv_info()
 
         # joint
         self.joint = {
