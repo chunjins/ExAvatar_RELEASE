@@ -5,7 +5,7 @@ from base import Trainer
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--subject_id', type=str, dest='subject_id')
+    parser.add_argument('--subject_id', default='mvhuman', type=str, dest='subject_id')
     parser.add_argument('--fit_pose_to_test', dest='fit_pose_to_test', action='store_true')
     parser.add_argument('--continue', dest='continue_train', action='store_true')
 
@@ -39,19 +39,11 @@ def main():
            
             # forward
             trainer.optimizer.zero_grad()
-            stats, loss = trainer.model(data, cur_itr, 'train')
+            loss = trainer.model(data, cur_itr, 'train')
             loss = {k:loss[k].mean() for k in loss}
 
             # backward
             sum(loss[k] for k in loss).backward()
-
-            # densify and prune scene Gaussians
-            if (not cfg.fit_pose_to_test) and (cur_itr < cfg.densify_end_itr):
-                with torch.no_grad():
-                    stats['mean_2d_grad'] = torch.stack([x.grad.detach() for x in stats['mean_2d']])
-                    stats.pop('mean_2d', None)
-                    stats = {k: v for k,v in stats.items()}
-                    trainer.model.module.adjust_gaussians(stats, trainer.model.module.scene_gaussian, cur_itr, trainer.optimizer)
 
             # update
             trainer.optimizer.step()

@@ -113,19 +113,18 @@ class Trainer(Base):
         trainset_loader = eval(cfg.dataset)(transforms.ToTensor(), 'train')
         self.itr_per_epoch = math.ceil(len(trainset_loader) / cfg.num_gpus / cfg.batch_size)
         self.batch_generator = DataLoader(dataset=trainset_loader, batch_size=cfg.num_gpus*cfg.batch_size, shuffle=True, num_workers=cfg.num_thread, pin_memory=True)
-        self.scene = trainset_loader.scene
+        # self.scene = trainset_loader.scene
         self.cam_dist = trainset_loader.cam_dist
         self.smplx_params = trainset_loader.smplx_params
 
     def _make_model(self, epoch=None):
         if cfg.continue_train:
             ckpt = self.load_model()
-            scene_point_num = ckpt['network']['scene_gaussian.point_num']
-            model = get_model(None, None, scene_point_num, self.smplx_params)
+            model = get_model(self.smplx_params)
             model = DataParallel(model).cuda()
             model.module.load_state_dict(ckpt['network'], strict=False)
         else:
-            model = get_model(self.scene, self.cam_dist, None, self.smplx_params)
+            model = get_model(self.smplx_params)
             model = DataParallel(model).cuda()
         optimizer = self.get_optimizer(model.module.optimizable_params)
         scheduler = self.get_scheduler()

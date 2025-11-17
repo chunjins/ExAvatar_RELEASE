@@ -17,7 +17,7 @@ class Custom(torch.utils.data.Dataset):
         self.data_split = data_split
         self.root_path = osp.join('..', 'data', 'Custom', 'data', cfg.subject_id)
         self.transform = transform
-        self.cam_params, self.img_paths, self.mask_paths, self.kpts, self.smplx_params, self.scene, self.frame_idx_list = self.load_data()
+        self.cam_params, self.img_paths, self.mask_paths, self.kpts, self.smplx_params, self.frame_idx_list = self.load_data()
         self.load_id_info()
         self.cam_dist = self.get_cam_dist()
 
@@ -102,38 +102,38 @@ class Custom(torch.utils.data.Dataset):
                 smplx_params[frame_idx] = {k: torch.FloatTensor(v) for k,v in json.load(f).items()}
 
         # load point cloud of background scene
-        scene = []
-        if osp.isfile(osp.join(self.root_path, 'sparse', 'points3D.txt')):
-            print('Load background point cloud from COLMAP')
-            with open(osp.join(self.root_path, 'sparse', 'points3D.txt')) as f:
-                lines = f.readlines()
-            for line in lines:
-                if line[0] == '#':
-                    continue
-                splitted = line.split()
-                xyz = torch.FloatTensor([float(splitted[1]), float(splitted[2]), float(splitted[3])])
-                rgb = torch.FloatTensor([float(splitted[4]), float(splitted[5]), float(splitted[6])]) / 255
-                scene.append(torch.cat((xyz, rgb)))
-            scene = torch.stack(scene)
-            is_valid = scene[:,2] < torch.quantile(scene[:,2], 0.95) # remove outliers
-            scene = scene[is_valid,:]
-        elif osp.isfile(osp.join(self.root_path, 'bkg_point_cloud.txt')):
-            print('Load background point cloud from monocular depth estimator')
-            with open(osp.join(self.root_path, 'bkg_point_cloud.txt')) as f:
-                lines = f.readlines()
-            for line in lines:
-                splitted = line.split()
-                xyz = torch.FloatTensor([float(splitted[0]), float(splitted[1]), float(splitted[2])])
-                rgb = torch.FloatTensor([float(splitted[3]), float(splitted[4]), float(splitted[5])]) / 255
-                scene.append(torch.cat((xyz, rgb)))
-            scene = torch.stack(scene)
-            scene = scene[torch.rand(len(scene)) > 0.8,:] # randomly sample partial points
-        else:
-            assert 0, 'Background point cloud is not available'
+        # scene = []
+        # if osp.isfile(osp.join(self.root_path, 'sparse', 'points3D.txt')):
+        #     print('Load background point cloud from COLMAP')
+        #     with open(osp.join(self.root_path, 'sparse', 'points3D.txt')) as f:
+        #         lines = f.readlines()
+        #     for line in lines:
+        #         if line[0] == '#':
+        #             continue
+        #         splitted = line.split()
+        #         xyz = torch.FloatTensor([float(splitted[1]), float(splitted[2]), float(splitted[3])])
+        #         rgb = torch.FloatTensor([float(splitted[4]), float(splitted[5]), float(splitted[6])]) / 255
+        #         scene.append(torch.cat((xyz, rgb)))
+        #     scene = torch.stack(scene)
+        #     is_valid = scene[:,2] < torch.quantile(scene[:,2], 0.95) # remove outliers
+        #     scene = scene[is_valid,:]
+        # elif osp.isfile(osp.join(self.root_path, 'bkg_point_cloud.txt')):
+        #     print('Load background point cloud from monocular depth estimator')
+        #     with open(osp.join(self.root_path, 'bkg_point_cloud.txt')) as f:
+        #         lines = f.readlines()
+        #     for line in lines:
+        #         splitted = line.split()
+        #         xyz = torch.FloatTensor([float(splitted[0]), float(splitted[1]), float(splitted[2])])
+        #         rgb = torch.FloatTensor([float(splitted[3]), float(splitted[4]), float(splitted[5])]) / 255
+        #         scene.append(torch.cat((xyz, rgb)))
+        #     scene = torch.stack(scene)
+        #     scene = scene[torch.rand(len(scene)) > 0.8,:] # randomly sample partial points
+        # else:
+        #     assert 0, 'Background point cloud is not available'
 
         if self.data_split == 'train':
             frame_idx_list *= 15
-        return cam_params, img_paths, mask_paths, kpts, smplx_params, scene, frame_idx_list
+        return cam_params, img_paths, mask_paths, kpts, smplx_params, frame_idx_list
     
     def load_id_info(self):
         with open(osp.join(self.root_path, 'smplx_optimized', 'shape_param.json')) as f:
